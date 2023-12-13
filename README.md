@@ -2,6 +2,33 @@
 
 "Standortdienst" is a single page application that integrates Mapbox to provide a user-friendly interface for managing and displaying locations on a map of Berlin. The application doesn't use a framework, but dynamically updates the user interface through direct DOM manipulations.
 
+## Demo
+
+[Live Demo](https://location-service-berlin.netlify.app/)
+
+## Screenshots
+
+### Places
+![Places or Locations List](/screenshots/places.png)
+*A list view of all the places*
+
+### Location Details 
+![Location Details View](/screenshots/detail.png)
+*Detailed information for each location can be viewed and edited*
+
+### Main Map View
+![Main Map View](/screenshots/map.png)
+*The main map view showcases the interactive map with markers for each location*
+
+### Add Location Screen
+![Add Location Screen](/screenshots/add.png)
+*Screen for adding new locations*
+
+### Login Screen
+![Login Screen](/screenshots/login.png)
+*The login screen*
+
+
 ## Key Features
 
 - User Authentication: login and logout functionality.
