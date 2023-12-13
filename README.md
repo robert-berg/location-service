@@ -6,6 +6,23 @@
 
 [Live Demo](https://location-service-berlin.netlify.app/)
 
+Login credentials:
+
+```  
+[  
+  {  
+    "username": "admina",  
+    "password": "password",  
+    "role": "admin"  
+  },  
+  {  
+    "username": "normalo",  
+    "password": "password",  
+    "role": "non-admin"  
+  }  
+]  
+``` 
+
 ## Screenshots
 
 ### Places
