@@ -7,7 +7,7 @@
 - User Authentication: login and logout functionality.
 - Location Management: Admin users can add, delete, and update location details.
 - Interactive Map: Uses Mapbox for displaying and interacting with location data.
-- 
+- Address to Geocoordinate Conversion: Dynamically generates geocoordinates from addresses using Mapbox
 
 ## Technologies Used
 
