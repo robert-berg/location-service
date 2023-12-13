@@ -1,0 +1,415 @@
+:root {
+    --drawer-width: 76px;
+    --panel-width: 400px;
+    --transition-duration: 0.35s;
+    --primary-color: #ff6f50;
+    --background-color: #f9f6f3;
+    --text-color: #242d2f;
+    --text-color-translucent: #242d2f26;
+    --hover-background-color: #fbdcd6;
+    --icon-size: 60px;
+    --border-radius-large: 16px;
+    --border-radius-small: 4px;
+    --font-size-small: 12px;
+    --font-size-large: 24px;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--background-color);
+}
+
+* {
+    font-family: "Lato", sans-serif;
+    font-variant-ligatures: no-common-ligatures;
+    color: var(--text-color);
+}
+
+.screen {
+    padding: 20px;
+}
+
+.container {
+    height: 100%;
+    display: flex;
+    overflow: hidden;
+}
+
+input,
+button {
+    margin: 5px 0;
+}
+
+.map-container {
+    flex: 1;
+    border-radius: var(--border-radius-large) 0 0 var(--border-radius-large);
+    overflow: hidden;
+    background: #efe9e1;
+    transition: margin var(--transition-duration) ease-out;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+.mapboxgl-ctrl-logo,
+.mapbox-improve-map {
+    display: none !important;
+}
+
+.mapboxgl-ctrl-attrib-inner {
+    pointer-events: none;
+    opacity: 0.8;
+    margin-bottom: -2px;
+}
+
+.drawer {
+    flex: 0 0 var(--drawer-width);
+    background-color: var(--background-color);
+    overflow: hidden;
+    padding: 24px 8px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    gap: 14px;
+    justify-content: center;
+    z-index: 2;
+}
+
+.panel {
+    flex: 0 0 var(--panel-width);
+    background-color: #fff;
+    border-radius: var(--border-radius-large);
+    overflow: auto;
+    position: absolute;
+    z-index: 1;
+    width: 0;
+    height: 100%;
+    left: 88px;
+    transition:
+        width var(--transition-duration) ease-out,
+        opacity var(--transition-duration) ease-in-out;
+    opacity: 0.1;
+}
+
+.locations {
+    list-style-type: none;
+    padding: 0;
+}
+
+.mapboxgl-popup-close-button {
+    display: none;
+}
+
+#home-radio,
+#login-radio,
+#update-radio,
+#add-radio,
+#map-radio {
+    display: none;
+}
+
+.panel .screen,
+.detail-panel .screen {
+    display: none;
+    flex-direction: column;
+}
+
+#home-radio:checked ~ .panel #main-screen,
+#login-radio:checked ~ .panel #login-screen,
+#add-radio:checked ~ .panel #add-screen,
+#update-radio:checked ~ .panel #update-delete-screen {
+    display: flex;
+}
+
+.hidden {
+    display: none;
+}
+
+.flex {
+    display: flex;
+}
+
+#home-radio:checked ~ .panel,
+#login-radio:checked ~ .panel,
+#add-radio:checked ~ .panel,
+#update-radio:checked ~ .panel {
+    width: 400px;
+    opacity: 1;
+}
+
+#home-radio:checked ~ .map-container,
+#login-radio:checked ~ .map-container,
+#add-radio:checked ~ .map-container,
+#update-radio:checked ~ .map-container {
+    margin-left: 424px;
+}
+
+.showing-detail-screen .map-container {
+    margin-left: 884px !important;
+}
+
+.floating-footer {
+    position: fixed;
+    bottom: 12px;
+    right: 12px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: var(--font-size-small);
+    user-select: none;
+}
+
+label {
+    cursor: pointer;
+}
+
+.drawer-item {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.drawer-item:hover .icon-outer-container {
+    background: var(--hover-background-color);
+}
+
+.drawer-item:hover .icon {
+    transform: scale(1.1);
+}
+
+.icon-outer-container {
+    position: relative;
+    height: 28px;
+    width: 52px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    border-radius: var(--border-radius-large);
+}
+
+.icon-background {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 0;
+    height: 100%;
+    background-color: #ff573388;
+    transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
+    border-radius: var(--border-radius-large);
+}
+
+.icon {
+    line-height: 32px;
+    height: 25px;
+    z-index: 1;
+    transition:
+        transform 0.2s cubic-bezier(0.2, 0, 0, 1),
+        font-variation-settings 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.title {
+    font-size: var(--font-size-small);
+    font-weight: 700;
+    letter-spacing: 0.1px;
+    line-height: 16px;
+    margin-bottom: 12px;
+    text-align: center;
+    user-select: none;
+    transition: font-variation-settings 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.icon {
+    user-select: none;
+}
+
+#home-radio:checked ~ .drawer label[for="home-radio"] .icon,
+#add-radio:checked ~ .drawer label[for="add-radio"] .icon,
+#login-radio:checked ~ .drawer label[for="login-radio"] .icon,
+#update-radio:checked ~ .drawer label[for="update-radio"] .icon {
+    transform: scale(1.1);
+}
+
+#home-radio:checked ~ .drawer label[for="home-radio"] .icon-outer-container .icon-background,
+#add-radio:checked ~ .drawer label[for="add-radio"] .icon-outer-container .icon-background,
+#login-radio:checked ~ .drawer label[for="login-radio"] .icon-outer-container .icon-background,
+#update-radio:checked ~ .drawer label[for="update-radio"] .icon-outer-container .icon-background {
+    left: 0;
+    width: 100%;
+}
+
+#home-radio:checked ~ .drawer label[for="home-radio"] .title,
+#add-radio:checked ~ .drawer label[for="add-radio"] .title,
+#login-radio:checked ~ .drawer label[for="login-radio"] .title,
+#update-radio:checked ~ .drawer label[for="update-radio"] .title {
+    color: var(--text-color);
+}
+
+object {
+    pointer-events: none;
+}
+
+button {
+    border-radius: 32px;
+    border: none;
+    font-size: 13.3333px;
+    font-weight: 600;
+    height: 40px;
+    padding: 8px 16px;
+    cursor: pointer;
+    background: var(--background-color);
+    transition: 0.3s;
+    margin-right: 8px;
+    color: var(--text-color);
+}
+
+button:hover {
+    background: #d7d7d7;
+}
+
+button.primary {
+    background: var(--primary-color);
+    color: white;
+    opacity: 1;
+}
+
+button.primary:hover {
+    background: var(--primary-color);
+    opacity: 0.9;
+}
+
+form {
+    width: 100%;
+}
+
+input[type="text"],
+input[type="password"] {
+    flex: 1;
+    border-radius: var(--border-radius-small) var(--border-radius-small) 0 0;
+    border: none;
+    outline: none;
+    background: var(--background-color);
+    padding: 0 16px;
+    height: 56px;
+    border-bottom: 2px solid var(--text-color-translucent);
+    font-size: 16px;
+    font-weight: 400;
+    transition: 0.3s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-bottom: 2px solid var(--primary-color);
+    background: #e9e5e1;
+}
+
+.locations li {
+    width: 100%;
+    background: var(--background-color);
+    min-height: 80px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    color: rgb(31, 31, 31);
+    font-size: var(--font-size-large);
+    padding: 24px;
+    user-select: none;
+    cursor: pointer;
+    border-radius: var(--border-radius-large);
+}
+
+.locations li:hover {
+    background: var(--hover-background-color);
+}
+
+.locations {
+    gap: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+#map-radio:checked ~ .drawer label[for="map-radio"] .icon {
+    transform: scale(1.1);
+}
+
+#map-radio:checked ~ .drawer label[for="map-radio"] .icon-outer-container .icon-background {
+    left: 0;
+    width: 100%;
+}
+
+#map-radio:checked ~ .drawer label[for="map-radio"] .title {
+    color: var(--text-color);
+}
+
+.detail-panel {
+    flex: 0 0 var(--panel-width);
+    background-color: #fff;
+    border-radius: var(--border-radius-large);
+    overflow: auto;
+    position: absolute;
+    z-index: 1;
+    width: 0;
+    height: 100%;
+    left: 488px;
+    transition:
+        width var(--transition-duration) ease-out,
+        opacity 0s ease-in-out;
+    opacity: 0;
+    margin-left: 16px;
+    overflow-x: hidden;
+}
+
+.detail-panel.show {
+    width: 440px;
+    opacity: 1;
+    height: auto;
+}
+
+.detail-panel .screen {
+    width: 400px;
+    display: flex;
+}
+
+label[for="add-radio"] {
+    display: none;
+}
+
+.admin label[for="add-radio"] {
+    display: flex;
+}
+
+.drawer-item[for="map-radio"],
+.drawer-item[for="add-radio"],
+.drawer-item[for="home-radio"] {
+    display: none;
+}
+
+.admin .drawer-item[for="map-radio"],
+.admin .drawer-item[for="add-radio"],
+.admin .drawer-item[for="home-radio"] {
+    display: flex;
+}
+
+.admin .drawer-item[for="login-radio"],
+.non-admin .drawer-item[for="login-radio"] {
+    display: none;
+}
+
+.non-admin .drawer-item[for="map-radio"],
+.non-admin .drawer-item[for="home-radio"] {
+    display: flex;
+}

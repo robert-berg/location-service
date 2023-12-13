@@ -1,0 +1,12 @@
+﻿################################################################################
+# Diese .gitignore-Datei wurde von Microsoft(R) Visual Studio automatisch erstellt.
+################################################################################
+
+/.vs/VSWorkspaceState.json
+/.vs/slnx.sqlite
+/.vs/ProjectSettings.json
+/.vs/robphi-WAD2023/v17/.wsuo
+/.vs/robphi-WAD2023/FileContentIndex/98306bd6-bfbc-45f1-bd3b-23d29dd7d812.vsidx
+/.vs/robphi-WAD2023/FileContentIndex/05286598-5cb2-4e45-9cd5-fbb98428636d.vsidx
+/.vs/robphi-WAD2023/FileContentIndex
+/.vs/robphi-WAD2023/config
