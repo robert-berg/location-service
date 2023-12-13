@@ -4,7 +4,7 @@
 
 ## Demo
 
-[Live Demo](https://location-service-berlin.netlify.app/)
+#### [Live Demo](https://location-service-berlin.netlify.app/)
 
 Login credentials:
 
