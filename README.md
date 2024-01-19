@@ -1,17 +1,17 @@
-# Standortdienst - Location Service
+# Location Service
 
-"Standortdienst" is a single page application that integrates Mapbox to provide a user-friendly interface for managing and displaying locations on a map of Berlin. The application doesn't use a framework, but dynamically updates the user interface through direct DOM manipulations.
+This web app is a single page application that integrates Mapbox to provide a user-friendly interface for managing and displaying locations on a map of Berlin. The application doesn't use a ui framework, but dynamically updates the user interface through direct DOM manipulations. It uses Express.js in combination with MongoDB on the server-side.
 
 ## Demo
 
-### [➡️ Live Demo](https://location-service-berlin.netlify.app/)
+### [➡️ Live Demo (without backend)](https://location-service-berlin.netlify.app/)
 
 Login credentials:
 
 ```  
 [  
   {  
-    "username": "admina",  
+    "username": "admin",  
     "password": "password",  
     "role": "admin"  
   },  
@@ -59,6 +59,8 @@ Login credentials:
 - CSS3
 - JavaScript (ES6)
 - Mapbox GL JS API
+- Express.js
+- MongoFB
 
 ## Setup
 
@@ -68,27 +70,13 @@ Login credentials:
 git clone https://github.com/robert-berg/location-service
 ```
 
-2. Open the `index.html` file in a modern web browser.
+2. Connect your own MongoDB database in `src/db/mongoCRUDs.js`
+
+3. Run `npm i` and `npm start`
 
 ## Usage 
 
-- Login/Logout: Use predefined user credentials to login. The application supports different roles with varying levels of access:
-
-```  
-[  
-  {  
-    "username": "admina",  
-    "password": "password",  
-    "role": "admin"  
-  },  
-  {  
-    "username": "normalo",  
-    "password": "password",  
-    "role": "non-admin"  
-  }  
-]  
-```  
-
+- Login/Logout: The application supports different roles with varying levels of access
 - Viewing Locations: Navigate to the "Map" to view locations marked on the map.
 - Adding Locations: Admin users can add new locations using the "Add" option, providing details like name, street, city, etc.
 - Editing and Deleting Locations: Admin users can also edit or remove existing locations.
