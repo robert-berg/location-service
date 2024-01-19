@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Standortdienst</title>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
+  <link rel="stylesheet" href="css/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+  <div class="container">
+    <!-- These radio buttons are always hidden. 
+			Interactions happen through the associated labels. -->
+    <input type="radio" id="map-radio" name="screen-toggle">
+    <input type="radio" id="home-radio" name="screen-toggle">
+    <input type="radio" id="login-radio" name="screen-toggle" checked>
+    <input type="radio" id="add-radio" name="screen-toggle">
+
+
+    <!-- Drawer mit Icons -->
+    <nav class="drawer">
+      <label class="drawer-item" for="map-radio">
+        <div class="icon-outer-container">
+          <div class="icon-background"></div>
+          <div class="icon">
+            <object type="image/svg+xml" data="images/svgs/map.svg"></object>
+          </div>
+        </div>
+        <div class="title">Map</div>
+      </label>
+      <label class="drawer-item" for="home-radio">
+        <div class="icon-outer-container">
+          <div class="icon-background"></div>
+          <div class="icon">
+            <object type="image/svg+xml" data="images/svgs/places.svg"></object>
+          </div>
+        </div>
+        <div class="title">Places</div>
+      </label>
+      <label class="drawer-item" for="add-radio">
+        <div class="icon-outer-container">
+          <div class="icon-background"></div>
+          <div class="icon">
+            <object type="image/svg+xml" data="images/svgs/add.svg"></object>
+          </div>
+        </div>
+        <div class="title">Add</div>
+      </label>
+
+      <label class="drawer-item" for="login-radio">
+        <div class="icon-outer-container">
+          <div class="icon-background"></div>
+          <div class="icon">
+            <object type="image/svg+xml" data="images/svgs/login.svg"></object>
+          </div>
+        </div>
+        <div class="title">Login</div>
+      </label>
+    </nav>
+
+    <!-- Panel für Screens -->
+    <div class="panel">
+
+      <!-- Login-Screen -->
+      <div class="screen" id="login-screen">
+        <form id="login-form">
+          <h2>Login</h2>
+          <input type="text" id="usernameInput" placeholder="Username" required>
+          <input type="password" id="passwordInput" placeholder="Password" required>
+          <div class="actions">
+            <button type="submit" class="primary">Login</button>
+          </div>
+        </form>
+      </div>
+
+
+      <!-- Main-Screen -->
+      <div class="screen" id="main-screen">
+
+        <h2 id="welcome-message">
+          <!-- 
+						This will be populated dynamically
+			  		-->
+        </h2>
+        <ul class="locations">
+        </ul>
+        <div class="actions">
+          <button class="primary" id="add-location-btn" onclick="document.querySelector('#add-radio').click()">Standort
+            hinzufügen</button>
+          <button id="logout-btn" onclick="document.querySelector('#login-radio').click()">Logout</button>
+        </div>
+
+      </div>
+
+      <!-- Add-Screen -->
+      <div class="screen" id="add-screen">
+        <form onsubmit="event.preventDefault();">
+          <h2>Standort hinzufügen</h2>
+          <input type="text" placeholder="Name" value="Alex" required id="add-name">
+          <input type="text" placeholder="Straße" value="Alexanderplatz 1" required id="add-street">
+          <input type="text" placeholder="PLZ" value="10178" name="plz" required id="add-plz">
+          <input type="text" placeholder="Stadt" value="Berlin" name="stadt" required id="add-city">
+          <div class="actions">
+            <button class="primary" onclick="locationsController.addLocation()" type="submit">Absenden</button>
+            <button type="button" onclick="document.querySelector('#home-radio').click()">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Detail Panel -->
+    <div class="detail-panel">
+      <div class="screen">
+        <form onsubmit="event.preventDefault();">
+          <!-- 
+  						This will be populated dynamically
+					-->
+        </form>
+      </div>
+    </div>
+
+
+    <!-- Karte mit Markern -->
+    <div class="map-container">
+      <div id="map">
+        <!-- 
+					This will be populated dynamically
+	  			-->
+      </div>
+    </div>
+  </div>
+  <div class="floating-footer">
+    Impressum | Datenschutzerklärung
+  </div>
+
+
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+  <script src='js/script.js'></script>
+
+</body>
+
+</html>

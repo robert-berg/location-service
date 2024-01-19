@@ -413,3 +413,8 @@ label[for="add-radio"] {
 .non-admin .drawer-item[for="home-radio"] {
     display: flex;
 }
+
+
+.non-admin #add-location-btn {
+    display: none;
+}

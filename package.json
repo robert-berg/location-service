@@ -1,0 +1,13 @@
+{
+  "name": "mywebapp",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./src/server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "express": "^4.18.2",
+    "mongodb": "6.3"
+  }
+}

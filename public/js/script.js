@@ -3,57 +3,20 @@ mapboxgl.accessToken =
 
 // Define global variables, enums, and constants
 
-const locations = [
-  {
-    name: 'Heizkraftwerk Reuter West',
-    coordinates: [13.2394, 52.5369],
-    street: 'Großer Spreering 5',
-    plz: '13599',
-    city: 'Berlin',
-  },
-  {
-    name: 'Heizkraftwerk Moabit',
-    coordinates: [13.345101845656307, 52.537994172541964],
-    street: 'Friedrich-Krause-Ufer 10',
-    plz: '13353',
-    city: 'Berlin',
-  },
-  {
-    name: 'Fehlende Ladestation',
-    coordinates: [13.415436844605647, 52.51197319198922],
-    street: 'Wallstraße 51',
-    plz: '10179',
-    city: 'Berlin',
-  },
-];
-
 const UserRole = {
   ADMIN: 'admin',
   NON_ADMIN: 'non-admin',
   NONE: 'none',
 };
 
-// mock data
-const users = [
-  {
-    username: 'admina',
-    password: 'password',
-    role: UserRole.ADMIN,
-  },
-  {
-    username: 'normalo',
-    password: 'password',
-    role: UserRole.NON_ADMIN,
-  },
-];
-
 // Define classes
 
 class User {
-  constructor(name, password, role) {
-    this.name = name;
-    this.password = password;
-    this.role = role;
+  constructor() {
+    this.name = null;
+    this._id = null;
+    this.firstname = null;
+    this.role = UserRole.NONE;
     this.observers = [];
   }
 
@@ -74,18 +37,34 @@ class User {
     console.log(`User Role: ${this.role}`);
   }
 
-  logIn() {
-    const authenticatedUser = this.authenticateUser();
+  async logIn(username, password) {
+    try {
+      const response = await fetch('/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({username, password}),
+      });
 
-    if (authenticatedUser) {
-      this.applyUserRoleToUI(authenticatedUser.role);
-      locationsController.mapController.update();
-      this.logUserInfo(); // Debug output
-      this.clearLoginForm();
-      this.notifyObservers();
-      return this;
-    } else {
-      console.log('Invalid username or password');
+      if (response.ok) {
+        const user = (await response.json()).user;
+        this._id = user._id;
+        this.name = user.username;
+        this.firstname = user.firstname;
+        this.role = user.role;
+        this.applyUserRoleToUI(this.role);
+        locationsController.mapController.update();
+        this.logUserInfo();
+        this.clearLoginForm();
+        this.notifyObservers();
+        return this;
+      } else {
+        console.log('Invalid username or password');
+        return null;
+      }
+    } catch (error) {
+      console.error('Login error:', error);
       return null;
     }
   }
@@ -93,12 +72,6 @@ class User {
   logOut() {
     document.body.className = '';
     locationsController.mapController.clearMarkers();
-  }
-
-  authenticateUser() {
-    return users.find(
-      (user) => user.username === this.name && user.password === this.password
-    );
   }
 
   applyUserRoleToUI(userRole) {
@@ -120,8 +93,8 @@ class User {
 }
 
 class LocationsController {
-  constructor(locations) {
-    this._locations = locations;
+  constructor() {
+    this._locations = [];
     this.observers = [];
     this.updateLocations();
     this.currentLocationId = null;
@@ -136,6 +109,22 @@ class LocationsController {
       }),
       this
     );
+  }
+
+  async fetchLocations() {
+    try {
+      const response = await fetch('/loc');
+      if (response.ok) {
+        this._locations = await response.json();
+        this.updateLocations();
+        this.notifyObservers();
+      } else {
+        throw new Error('Failed to fetch locations');
+      }
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+      this.handleError(error.message);
+    }
   }
 
   getLocations() {
@@ -194,21 +183,32 @@ class LocationsController {
           this.showDetailScreen(index);
         };
 
-        li.appendChild(document.createTextNode(location.name));
+        li.appendChild(document.createTextNode(location.title));
         ul.appendChild(li);
       });
     }
   }
 
-  deleteLocation(index) {
+  async deleteLocation(index) {
     if (document.body.classList.contains('admin')) {
       if (index >= 0 && index < this._locations.length) {
-        this._locations.splice(index, 1);
-        this.updateLocations();
-        this.notifyObservers();
-        console.log(`Location at index ${index} deleted.`);
+        const locationId = this._locations[index]._id; // Assuming _id is the identifier
+        try {
+          const response = await fetch(`/loc/${locationId}`, {
+            method: 'DELETE',
+          });
+
+          if (response.ok) {
+            this.fetchLocations(); // Refresh locations list
+          } else {
+            throw new Error('Failed to delete location');
+          }
+        } catch (error) {
+          console.error('Error deleting location:', error);
+          this.handleError(error.message);
+        }
       } else {
-        this.handleError(`Invalid index: ${index}`);
+        console.error(`Invalid index: ${index}`);
       }
     }
   }
@@ -224,7 +224,7 @@ class LocationsController {
     }
   }
 
-  addLocation() {
+  async addLocation() {
     if (document.body.classList.contains('admin')) {
       const name = document.getElementById('add-name').value;
       const street = document.getElementById('add-street').value;
@@ -238,18 +238,38 @@ class LocationsController {
       try {
         this.getCoordinatesFromText(
           street + ' ' + plz + ' ' + city,
-          (coordinates) => {
+          async (coordinates) => {
             const location = {
-              name: name,
+              title: name,
+              description: '',
               street: street,
-              plz: plz,
+              zip: plz,
               city: city,
-              coordinates: coordinates,
+              state: '',
+              lat: coordinates[1],
+              lon: coordinates[0],
             };
-            this._locations.push(location);
-            this.updateLocations();
-            this.notifyObservers();
-            document.querySelector('#home-radio').click();
+
+            try {
+              const response = await fetch('/loc', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(location),
+              });
+
+              if (response.ok) {
+                const newLocationId = await response.text();
+                this.fetchLocations(); // Refresh locations list
+                document.querySelector('#home-radio').click();
+              } else {
+                throw new Error('Failed to add location');
+              }
+            } catch (error) {
+              console.error('Error adding location:', error);
+              this.handleError(error.message);
+            }
           }
         );
       } catch {
@@ -337,9 +357,9 @@ class LocationsController {
     const heading = document.createElement('h2');
     heading.textContent = 'Standort ändern';
 
-    const nameInput = createInputField('name', location.name, 'Name');
+    const nameInput = createInputField('name', location.title, 'Name');
     const streetInput = createInputField('straße', location.street, 'Straße');
-    const plzInput = createInputField('plz', location.plz, 'PLZ');
+    const plzInput = createInputField('plz', location.zip, 'PLZ');
     const cityInput = createInputField('stadt', location.city, 'Stadt');
 
     const updateButton = createButton('Update', 'primary', () => {
@@ -384,7 +404,7 @@ class LocationsController {
 
   updateLocation(index, name, street, plz, city) {
     if (document.body.classList.contains('admin')) {
-      const applyLocationUpdate = (
+      const applyLocationUpdate = async (
         index,
         name,
         street,
@@ -393,14 +413,31 @@ class LocationsController {
         coordinates
       ) => {
         const location = this._locations[index];
-        location.name = name;
+        location.title = name;
         location.street = street;
-        location.plz = plz;
+        location.zip = plz;
         location.city = city;
-        location.coordinates = coordinates;
+        location.lon = coordinates[0];
+        location.lat = coordinates[1];
 
-        this.updateLocations();
-        this.notifyObservers();
+        try {
+          const response = await fetch(`/loc/${location._id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(location),
+          });
+
+          if (response.ok) {
+            this.fetchLocations();
+          } else {
+            throw new Error('Failed to update location');
+          }
+        } catch (error) {
+          console.error('Error updating location:', error);
+          this.handleError(error.message);
+        }
       };
 
       if (index >= 0 && index < this._locations.length) {
@@ -409,7 +446,7 @@ class LocationsController {
         // Check if address-related fields have changed
         if (
           location.street !== street ||
-          location.plz !== plz ||
+          location.zip !== plz ||
           location.city !== city
         ) {
           this.getCoordinatesFromText(
@@ -426,14 +463,10 @@ class LocationsController {
             }
           );
         } else {
-          applyLocationUpdate(
-            index,
-            name,
-            street,
-            plz,
-            city,
-            location.coordinates
-          );
+          applyLocationUpdate(index, name, street, plz, city, [
+            location.lon,
+            location.lat,
+          ]);
         }
       }
     }
@@ -494,10 +527,10 @@ class MapController {
 
     this.markers.push(
       new mapboxgl.Marker(el)
-        .setLngLat(location.coordinates)
+        .setLngLat([location.lon, location.lat])
         .setPopup(
           new mapboxgl.Popup({offset: 25}) // add popups
-            .setHTML('<strong>' + location.name + '</strong>')
+            .setHTML('<strong>' + location.title + '</strong>')
         )
         .addTo(this.map)
     );
@@ -519,7 +552,7 @@ class MapController {
   }
 }
 
-const locationsController = new LocationsController(locations);
+const locationsController = new LocationsController();
 
 // Functions, Events and Listeners
 
@@ -528,6 +561,7 @@ let loggedInUser;
 document.addEventListener('DOMContentLoaded', () => {
   const homeRadio = document.getElementById('home-radio');
   const navRadios = document.querySelectorAll('input[name="screen-toggle"]');
+  const welcomeMessageElement = document.getElementById('welcome-message');
   navRadios.forEach((radio) => {
     radio.addEventListener('change', function () {
       if (
@@ -546,23 +580,17 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const loginForm = document.getElementById('login-form');
-  loginForm.addEventListener('submit', (event) => {
+  loginForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const username = document.getElementById('usernameInput').value;
     const password = document.getElementById('passwordInput').value;
 
-    loggedInUser = users.find(
-      (user) => user.username === username && user.password === password
-    );
-
-    if (loggedInUser) {
-      const user = new User(
-        loggedInUser.username,
-        loggedInUser.password,
-        loggedInUser.role
-      );
-      loggedInUser = user.logIn();
+    const user = await new User().logIn(username, password);
+    if (user) {
+      loggedInUser = user;
+      welcomeMessageElement.textContent = `Willkommen ${loggedInUser.firstname}!`;
+      locationsController.fetchLocations();
       homeRadio.click();
     } else {
       alert('Invalid username or password');
