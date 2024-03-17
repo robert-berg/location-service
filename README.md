@@ -60,7 +60,7 @@ Login credentials:
 - JavaScript (ES6)
 - Mapbox GL JS API
 - Express.js
-- MongoFB
+- MongoDB
 
 ## Setup
 
